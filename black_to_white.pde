@@ -2,20 +2,18 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 GeneticAlg g;
-int m_nPopulation = 50;
+int m_nPopulation = 1000;
 ArrayList<int[]> currGen;
 int m_nBest = 0;
-int[] barrAnswer;
 boolean bSuccess = false;
+int maxLength;
 
 public void setup(){
   size(200, 200);
   //size(100, 99);
-  barrAnswer = new int[width*height/4];
-  java.util.Arrays.fill(barrAnswer, 1);
   g = new GeneticAlg(GeneticAlg.MatingType.Hermaphrodite, GeneticAlg.LifeCycle.Gametic, 2, m_nPopulation);
-  int[] first = new int[width*height/4];
-  first[(int)(Math.random()*first.length)] = 1;
+  maxLength = width*height/4;
+  int[] first = new int[maxLength];
   g.AddOrganism(first, BigInteger.valueOf(2));
 }
 
@@ -32,15 +30,30 @@ private void drawChild(int[] child){
   color black = color(0);
   loadPixels();
   int i = 0;
-  for(; i < child.length && i < barrAnswer.length && i < pixels.length/4; i++){
-    if (child[i] == barrAnswer[i]){
-      setColor(i, white);
-    } else {
+  if (child.length < maxLength){
+    int offset = (maxLength - child.length) / 2;
+    for(; i < child.length; i++){
+      if (child[i] == 1){
+        setColor(i+offset, white);
+      } else {
+        setColor(i+offset, black);
+      }
+    }
+    i += offset;
+    for(; i < maxLength; i++){
       setColor(i, black);
     }
-  }
-  for(; i < pixels.length/4; i++){
-    setColor(i, black);
+    for(i = 0; i < offset; i++){
+      setColor(i, black);
+    }
+  } else {
+    for(; i < maxLength; i++){
+      if (child[i] == 1){
+        setColor(i, white);
+      } else {
+        setColor(i, black);
+      }
+    }
   }
   updatePixels();
 }
@@ -53,15 +66,9 @@ public void draw(){
                 BigInteger nMaxFitness = BigInteger.ONE;
                 for(int i = 0; i<children.size() && !bSuccess; i++){
                     int[] child = children.get(i);
-                    BigInteger nFitness = BigInteger.ONE;
-                    bSuccess = child.length >= barrAnswer.length;
-                    for(int j = 0; j < child.length && j < barrAnswer.length; j++){
-                      bSuccess &= (child[j] == barrAnswer[j]);
-                        if (child[j] == barrAnswer[j]){
-                            nFitness = nFitness.multiply(BigInteger.valueOf(2));
-                        }
-                    }
-                    nFitness = nFitness.add(BigInteger.valueOf(barrAnswer.length * 1000/(Math.abs(child.length - barrAnswer.length)+1)));
+                    BigInteger nFitness = BigInteger.valueOf(
+                    (int)map(min(child.length, maxLength), 0, maxLength, maxLength*1000, 2));
+                    bSuccess = (child.length == 0);
                     if (bSuccess){
                       println("success!");
                     }
@@ -78,6 +85,7 @@ public void draw(){
                     g.SetChildrenFitness(fitnesses);
                 }
                 drawChild(children.get(bestChildIndex));
+                saveFrame("frame-######.png");
   }
   
 }
