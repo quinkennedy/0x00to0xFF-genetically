@@ -48,9 +48,7 @@ private void drawChild(int[] child){
 public void draw(){
   if (!bSuccess){
     int bestChildIndex = 0;
-    println("getting children");
     ArrayList<int[]> children = g.GetChildren(m_nPopulation);
-    println("got children");
                 BigInteger[] fitnesses = new BigInteger[children.size()];
                 BigInteger nMaxFitness = BigInteger.ONE;
                 for(int i = 0; i<children.size() && !bSuccess; i++){
@@ -63,7 +61,7 @@ public void draw(){
                             nFitness = nFitness.multiply(BigInteger.valueOf(2));
                         }
                     }
-                    nFitness = nFitness.add(BigInteger.valueOf(barrAnswer.length * 10000000/(Math.abs(child.length - barrAnswer.length)+1)));
+                    nFitness = nFitness.add(BigInteger.valueOf(barrAnswer.length * 1000/(Math.abs(child.length - barrAnswer.length)+1)));
                     if (bSuccess){
                       println("success!");
                     }
@@ -78,7 +76,6 @@ public void draw(){
                 }
                 if (!bSuccess){
                     g.SetChildrenFitness(fitnesses);
-                    println("set fitness");
                 }
                 drawChild(children.get(bestChildIndex));
   }
