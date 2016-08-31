@@ -1,19 +1,28 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+String quote = "We are a nation of communities... a brilliant diversity spread like stars, like a thousand points of light in a broad and peaceful sky.";//George H.W. Bush
 
 GeneticAlg g;
-int m_nPopulation = 1000;
+int m_nPopulation = 100;
 ArrayList<int[]> currGen;
 int m_nBest = 0;
 boolean bSuccess = false;
+boolean bSave = false;
 int maxLength;
 
 public void setup(){
   size(200, 200);
   //size(100, 99);
-  g = new GeneticAlg(GeneticAlg.MatingType.Hermaphrodite, GeneticAlg.LifeCycle.Gametic, 2, m_nPopulation);
+  g = new GeneticAlg(
+    GeneticAlg.MatingType.Hermaphrodite, 
+    GeneticAlg.LifeCycle.Gametic, 
+    4, 
+    m_nPopulation);
   maxLength = width*height/4;
   int[] first = new int[maxLength];
+  Arrays.fill(first, 1);
   g.AddOrganism(first, BigInteger.valueOf(2));
 }
 
@@ -33,7 +42,7 @@ private void drawChild(int[] child){
   if (child.length < maxLength){
     int offset = (maxLength - child.length) / 2;
     for(; i < child.length; i++){
-      if (child[i] == 1){
+      if (child[i] != 0){
         setColor(i+offset, white);
       } else {
         setColor(i+offset, black);
@@ -85,7 +94,9 @@ public void draw(){
                     g.SetChildrenFitness(fitnesses);
                 }
                 drawChild(children.get(bestChildIndex));
-                saveFrame("frame-######.png");
-  }
+                if (bSave){
+                  saveFrame("by_hundred_weight_white/frame-#########.png");
+                }
+  }  
   
 }
